@@ -1,0 +1,3 @@
+com\storyspark\StorySparkApplication.class
+com\storyspark\controller\HealthController.class
+com\storyspark\config\WebConfig.class

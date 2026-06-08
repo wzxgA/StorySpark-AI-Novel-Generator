@@ -1,0 +1,21 @@
+server:
+  port: 18080
+
+spring:
+  application:
+    name: storyspark-backend
+  datasource:
+    url: jdbc:sqlite:${user.home}/.storyspark/data.db
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate.boot.allow_jdbc_metadata_access: false
+
+logging:
+  level:
+    com.storyspark: INFO
