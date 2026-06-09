@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Save, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
@@ -15,6 +16,17 @@ interface Props {
 
 export default function EntityFormWrapper({ title, loading, error, onSave, onDelete, saveLabel, extraActions, children }: Props) {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        if (!loading) onSave();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onSave, loading]);
 
   return (
     <div className="h-full flex flex-col">

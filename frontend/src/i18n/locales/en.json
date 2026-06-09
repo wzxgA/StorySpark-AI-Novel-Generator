@@ -172,6 +172,13 @@
     "currentChapter": "Chapter {{num}} Preview",
     "waiting": "Waiting for AI..."
   },
+  "contextMenu": {
+    "rename": "Rename",
+    "delete": "Delete",
+    "addNew": "Add New",
+    "renamePrompt": "New name:",
+    "deleteConfirm": "Confirm delete?"
+  },
   "selector": {
     "selectCharacters": "Select Characters",
     "selectItems": "Select Items",

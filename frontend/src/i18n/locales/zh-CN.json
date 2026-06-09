@@ -172,6 +172,13 @@
     "currentChapter": "第 {{num}} 章预览",
     "waiting": "等待 AI 响应..."
   },
+  "contextMenu": {
+    "rename": "重命名",
+    "delete": "删除",
+    "addNew": "新建",
+    "renamePrompt": "新名称：",
+    "deleteConfirm": "确认删除？"
+  },
   "selector": {
     "selectCharacters": "选择角色",
     "selectItems": "选择物品",

@@ -130,6 +130,18 @@ export default function ChapterEditor({ novelId, entityId }: Props) {
     setShowPreview(false);
   };
 
+  // Ctrl+Enter to trigger generation
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && e.key === 'Enter') {
+        e.preventDefault();
+        if (!isGenerating && entityId) handleGenerate();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isGenerating, entityId, handleGenerate]);
+
   useEffect(() => {
     if (!isGenerating && generatingChapterId === null && streamingContent && showPreview && entityId) {
       const content = streamingContent;

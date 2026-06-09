@@ -13,6 +13,7 @@ interface LayoutState {
   closeAllTabs: () => void;
   replaceTabId: (oldId: string, newId: string, newEntityId: number) => void;
   updateTabTitle: (tabId: string, title: string) => void;
+  reorderTab: (fromIndex: number, toIndex: number) => void;
 }
 
 function makeTabId(type: EntityType, entityId: number | null): string {
@@ -77,5 +78,14 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
     set((s) => ({
       openTabs: s.openTabs.map((t) => (t.id === tabId ? { ...t, title } : t)),
     }));
+  },
+
+  reorderTab: (fromIndex, toIndex) => {
+    set((s) => {
+      const newTabs = [...s.openTabs];
+      const [moved] = newTabs.splice(fromIndex, 1);
+      newTabs.splice(toIndex, 0, moved);
+      return { openTabs: newTabs };
+    });
   },
 }));

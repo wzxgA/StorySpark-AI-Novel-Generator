@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { ChevronRight, ChevronDown, Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
+import ContextMenu from '../shared/ContextMenu';
+import type { ContextMenuItem } from '../shared/ContextMenu';
 
 interface Props {
   label: string;
@@ -12,9 +15,12 @@ interface Props {
   children?: ReactNode;
   depth?: number;
   active?: boolean;
+  contextMenuItems?: ContextMenuItem[];
 }
 
-export default function TreeNode({ label, icon, count, expanded, onToggle, onClick, onAdd, children, depth = 0, active }: Props) {
+export default function TreeNode({ label, icon, count, expanded, onToggle, onClick, onAdd, children, depth = 0, active, contextMenuItems }: Props) {
+  const [ctxMenu, setCtxMenu] = useState<{ open: boolean; x: number; y: number } | null>(null);
+
   return (
     <div>
       <div
@@ -23,6 +29,12 @@ export default function TreeNode({ label, icon, count, expanded, onToggle, onCli
         }`}
         style={{ paddingLeft: `${8 + depth * 16}px` }}
         onClick={() => { onToggle(); onClick?.(); }}
+        onContextMenu={(e) => {
+          if (!contextMenuItems || contextMenuItems.length === 0) return;
+          e.preventDefault();
+          e.stopPropagation();
+          setCtxMenu({ open: true, x: e.clientX, y: e.clientY });
+        }}
       >
         {children ? (
           expanded ? <ChevronDown className="w-3.5 h-3.5 shrink-0 text-gray-500" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0 text-gray-500" />
@@ -46,6 +58,16 @@ export default function TreeNode({ label, icon, count, expanded, onToggle, onCli
       </div>
       {expanded && children && (
         <div>{children}</div>
+      )}
+
+      {contextMenuItems && contextMenuItems.length > 0 && (
+        <ContextMenu
+          x={ctxMenu?.x ?? 0}
+          y={ctxMenu?.y ?? 0}
+          open={ctxMenu?.open ?? false}
+          onClose={() => setCtxMenu(null)}
+          items={contextMenuItems}
+        />
       )}
     </div>
   );
