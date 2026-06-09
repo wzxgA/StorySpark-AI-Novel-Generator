@@ -39,6 +39,9 @@ public class Synopsis {
     @Column(nullable = false)
     private SynopsisType summaryType = SynopsisType.MANUAL;
 
+    @Column(nullable = false)
+    private int summaryLevel = 1;
+
     @CreatedDate
     @Column(updatable = false)
     private Instant createdAt;
@@ -65,6 +68,9 @@ public class Synopsis {
 
     public SynopsisType getSummaryType() { return summaryType; }
     public void setSummaryType(SynopsisType summaryType) { this.summaryType = summaryType; }
+
+    public int getSummaryLevel() { return summaryLevel; }
+    public void setSummaryLevel(int summaryLevel) { this.summaryLevel = summaryLevel; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

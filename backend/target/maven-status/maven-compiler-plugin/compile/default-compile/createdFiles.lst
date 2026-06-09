@@ -1,3 +1,4 @@
+com\storyspark\service\ContextManager$ContextAssembly.class
 com\storyspark\model\enums\NovelStatus.class
 com\storyspark\repository\AIConfigRepository.class
 com\storyspark\model\enums\ChapterStatus.class
@@ -6,6 +7,7 @@ com\storyspark\service\AIConfigService.class
 com\storyspark\controller\CharacterController.class
 com\storyspark\controller\ItemController.class
 com\storyspark\config\EncryptionUtil.class
+com\storyspark\service\ContextManager.class
 com\storyspark\repository\SynopsisRepository.class
 com\storyspark\config\LangChain4jConfig.class
 com\storyspark\model\entity\Chapter.class
@@ -13,6 +15,7 @@ com\storyspark\repository\ChapterRepository.class
 com\storyspark\controller\HealthController.class
 com\storyspark\controller\AIConfigController.class
 com\storyspark\model\entity\Character.class
+com\storyspark\service\TokenCounter.class
 com\storyspark\model\dto\ChapterDTO.class
 com\storyspark\controller\SynopsisController.class
 com\storyspark\model\entity\Novel.class
@@ -47,8 +50,10 @@ com\storyspark\repository\CharacterRepository.class
 com\storyspark\model\entity\Outline.class
 com\storyspark\config\DataSourceConfig.class
 com\storyspark\service\ItemService.class
+com\storyspark\service\Summarizer.class
 com\storyspark\controller\ChapterController.class
 com\storyspark\controller\AIGenerationController.class
 com\storyspark\repository\NovelRepository.class
 com\storyspark\model\dto\GenerationRequest.class
 com\storyspark\repository\WorldBuildingRepository.class
+com\storyspark\service\ContextManager$ChaptersResult.class

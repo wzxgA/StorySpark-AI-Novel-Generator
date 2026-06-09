@@ -45,9 +45,12 @@ D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ChapterPlanService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ChapterService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\CharacterService.java
+D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ContextManager.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ItemService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\NovelService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\OutlineService.java
+D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\Summarizer.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\SynopsisService.java
+D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\TokenCounter.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\WorldBuildingService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\StorySparkApplication.java

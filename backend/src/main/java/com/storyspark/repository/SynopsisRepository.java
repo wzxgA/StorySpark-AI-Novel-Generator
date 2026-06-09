@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface SynopsisRepository extends JpaRepository<Synopsis, Long> {
     List<Synopsis> findByNovelIdOrderByChapterRangeStartAsc(Long novelId);
+    List<Synopsis> findByNovelIdAndSummaryLevelOrderByChapterRangeStartAsc(Long novelId, int summaryLevel);
 }

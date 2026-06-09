@@ -21,8 +21,8 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Service
 public class AIGenerationService {
@@ -32,35 +32,43 @@ public class AIGenerationService {
 
     private static final String SYSTEM_PROMPT = """
             你是专业小说家。请严格按照以下设定和指引创作章节内容：
-            - 保持角色性格和行为一致
-            - 严格遵循世界观设定，不添加矛盾的设定
-            - 按照大纲推动剧情发展
+
+            ## 核心约束
+            - 保持角色性格和行为一致：角色言行必须符合其已设定的性格特征、动机和关系
+            - 严格遵循世界观设定：不添加矛盾的设定，不自行修改或推翻已有世界观
+            - 时间线一致性：事件顺序合理，前后时间线不冲突，注意章节间的时间衔接
+            - 场景不冲突：地点、环境描述与已建立的世界观一致
+
+            ## 创作规范
+            - 按照大纲推动剧情发展，合理安排剧情节奏
             - 使用 Markdown 格式书写，适当使用标题和段落
             - 内容生动详实，注重细节描写
-            - 直接输出章节正文，不要添加额外说明""";
+            - 对话自然流畅，符合角色性格
+
+            ## 自动创建规则
+            - 如果剧情需要引入新角色，请为该角色命名并提供简短描述（格式：【新角色】名称：描述）
+            - 如果剧情需要重要物品，请注明（格式：【新物品】名称：描述）
+            - 如果剧情涉及新的世界观设定，请注明（格式：【新设定】标题：内容）
+            - 这些标记将帮助系统自动记录新添加的要素
+
+            ## 输出规范
+            - 直接输出章节正文，不要添加额外说明（新角色/物品/设定标记除外）
+            - 章节标题请使用 Markdown 一级标题格式：# 第X章 章节名""";
 
     private final AIConfigRepository aiConfigRepository;
     private final NovelRepository novelRepository;
     private final ChapterRepository chapterRepository;
-    private final OutlineRepository outlineRepository;
-    private final com.storyspark.repository.CharacterRepository characterRepository;
-    private final WorldBuildingRepository worldBuildingRepository;
-    private final ChapterPlanRepository chapterPlanRepository;
-    private final SynopsisRepository synopsisRepository;
+    private final ContextManager contextManager;
+    private final Summarizer summarizer;
 
     public AIGenerationService(AIConfigRepository aiConfigRepository, NovelRepository novelRepository,
-                               ChapterRepository chapterRepository, OutlineRepository outlineRepository,
-                               com.storyspark.repository.CharacterRepository characterRepository,
-                               WorldBuildingRepository worldBuildingRepository,
-                               ChapterPlanRepository chapterPlanRepository, SynopsisRepository synopsisRepository) {
+                               ChapterRepository chapterRepository,
+                               ContextManager contextManager, Summarizer summarizer) {
         this.aiConfigRepository = aiConfigRepository;
         this.novelRepository = novelRepository;
         this.chapterRepository = chapterRepository;
-        this.outlineRepository = outlineRepository;
-        this.characterRepository = characterRepository;
-        this.worldBuildingRepository = worldBuildingRepository;
-        this.chapterPlanRepository = chapterPlanRepository;
-        this.synopsisRepository = synopsisRepository;
+        this.contextManager = contextManager;
+        this.summarizer = summarizer;
     }
 
     /**
@@ -133,17 +141,22 @@ public class AIGenerationService {
                 if (cancelled.get()) break;
             }
 
-            // Use an AtomicBoolean to detect when this single chapter completes
-            AtomicBoolean chapterDone = new AtomicBoolean(false);
-            AtomicBoolean chapterError = new AtomicBoolean(false);
+            // Use CountDownLatch to wait for this single chapter to complete
+            CountDownLatch chapterLatch = new CountDownLatch(1);
 
             int finalChapterNumber = chapterNumber;
             Chapter finalChapter = chapter;
             generateOneChapter(novel, chapterNumber, chapter, emitter, () -> {
-                chapterDone.set(true);
+                chapterLatch.countDown();
             });
 
-            // If generation failed with error, mark and continue
+            try {
+                chapterLatch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+
             completedChapters++;
 
             try {
@@ -157,6 +170,13 @@ public class AIGenerationService {
             } catch (Exception ignored) {
                 if (cancelled.get()) break;
             }
+        }
+
+        // Auto-summarize after batch completion
+        try {
+            summarizer.summarizeAfterBatch(novelId, novel, endChapter);
+        } catch (Exception e) {
+            log.error("Auto-summary failed after batch generate for novel {}", novelId, e);
         }
 
         try {
@@ -264,102 +284,11 @@ public class AIGenerationService {
     }
 
     private String buildUserPrompt(Novel novel, int chapterNumber) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("请写出第").append(chapterNumber).append("章的完整内容。\n\n");
-
-        sb.append("=== 小说信息 ===\n");
-        sb.append("标题：").append(novel.getTitle()).append("\n");
-        if (novel.getDescription() != null && !novel.getDescription().isEmpty()) {
-            sb.append("简介：").append(novel.getDescription()).append("\n");
-        }
-
-        outlineRepository.findByNovelId(novel.getId()).ifPresent(outline -> {
-            if (outline.getContent() != null && !outline.getContent().isEmpty()) {
-                sb.append("\n=== 大纲 ===\n");
-                sb.append(outline.getContent()).append("\n");
-            }
-        });
-
-        List<com.storyspark.model.entity.Character> characters = characterRepository.findByNovelId(novel.getId());
-        if (!characters.isEmpty()) {
-            sb.append("\n=== 角色列表 ===\n");
-            for (var ch : characters) {
-                sb.append("- 名称：").append(ch.getName());
-                if (ch.getDescription() != null && !ch.getDescription().isEmpty()) {
-                    sb.append("\n  描述：").append(ch.getDescription());
-                }
-                if (ch.getTraits() != null && !ch.getTraits().isEmpty()) {
-                    sb.append("\n  特征：").append(ch.getTraits());
-                }
-                if (ch.getRelationships() != null && !ch.getRelationships().isEmpty()) {
-                    sb.append("\n  关系：").append(ch.getRelationships());
-                }
-                sb.append("\n");
-            }
-        }
-
-        List<WorldBuilding> wbEntries = worldBuildingRepository.findByNovelId(novel.getId());
-        if (!wbEntries.isEmpty()) {
-            sb.append("\n=== 世界观设定 ===\n");
-            for (WorldBuilding wb : wbEntries) {
-                sb.append("- [").append(wb.getCategory()).append("] ").append(wb.getTitle());
-                if (wb.getContent() != null && !wb.getContent().isEmpty()) {
-                    sb.append("：").append(wb.getContent());
-                }
-                sb.append("\n");
-            }
-        }
-
-        List<ChapterPlan> plans = chapterPlanRepository.findByNovelIdOrderByChapterRangeStartAsc(novel.getId());
-        List<ChapterPlan> matchingPlans = plans.stream()
-                .filter(p -> p.getChapterRangeStart() <= chapterNumber
-                        && p.getChapterRangeEnd() >= chapterNumber)
-                .collect(Collectors.toList());
-        if (!matchingPlans.isEmpty()) {
-            sb.append("\n=== 本章计划 ===\n");
-            for (ChapterPlan plan : matchingPlans) {
-                if (plan.getOutline() != null && !plan.getOutline().isEmpty()) {
-                    sb.append("大纲指导：").append(plan.getOutline()).append("\n");
-                }
-                if (plan.getNotes() != null && !plan.getNotes().isEmpty()) {
-                    sb.append("备注：").append(plan.getNotes()).append("\n");
-                }
-            }
-        }
-
-        List<Synopsis> synopses = synopsisRepository.findByNovelIdOrderByChapterRangeStartAsc(novel.getId());
-        if (!synopses.isEmpty()) {
-            List<Synopsis> priorSynopses = synopses.stream()
-                    .filter(s -> s.getChapterRangeEnd() < chapterNumber)
-                    .collect(Collectors.toList());
-            if (!priorSynopses.isEmpty()) {
-                sb.append("\n=== 前章摘要 ===\n");
-                for (Synopsis s : priorSynopses) {
-                    sb.append("第").append(s.getChapterRangeStart()).append("-")
-                            .append(s.getChapterRangeEnd()).append("章：")
-                            .append(s.getContent()).append("\n");
-                }
-            }
-        }
-
-        String chapterTitle = "第" + chapterNumber + "章";
-        Chapter existingChapter = chapterRepository.findByNovelIdAndChapterNumber(novel.getId(), chapterNumber)
-                .orElse(null);
-        if (existingChapter != null && existingChapter.getTitle() != null
-                && !existingChapter.getTitle().isEmpty()) {
-            chapterTitle = existingChapter.getTitle();
-        }
-
-        AIConfig config = aiConfigRepository.findById(1L).orElse(null);
-        int targetWords = config != null ? config.getChapterWordCount() : 3000;
-
-        sb.append("\n=== 写作要求 ===\n");
-        sb.append("章节：").append(chapterTitle).append("\n");
-        sb.append("目标字数：约").append(targetWords).append("字\n");
-        sb.append("请直接开始写正文内容。\n");
-
-        return sb.toString();
+        ContextManager.ContextAssembly assembly = contextManager.buildContext(novel, chapterNumber);
+        log.info("Chapter {}: {} tokens / {} budget, {} recent chapters included",
+                chapterNumber, assembly.getTotalTokensUsed(), assembly.getBudgetLimit(),
+                assembly.getRecentChapterCount());
+        return assembly.getFullUserPrompt();
     }
 
     private void sendSseEvent(SseEmitter emitter, String event, Object data) throws Exception {
