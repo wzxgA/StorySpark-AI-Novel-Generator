@@ -66,7 +66,20 @@ export default function ChapterEditor({ novelId, entityId }: Props) {
 
   const computeWordCount = (text: string) => {
     const trimmed = text.trim();
-    return trimmed ? trimmed.split(/\s+/).length : 0;
+    if (!trimmed) return 0;
+    // Count CJK characters individually, plus whitespace-separated words for the rest
+    let count = 0;
+    let nonCjk = '';
+    for (const ch of trimmed) {
+      if (/[一-鿿㐀-䶿豈-﫿]/.test(ch)) {
+        if (nonCjk) { count += nonCjk.trim().split(/\s+/).filter(Boolean).length; nonCjk = ''; }
+        count++;
+      } else {
+        nonCjk += ch;
+      }
+    }
+    if (nonCjk) count += nonCjk.trim().split(/\s+/).filter(Boolean).length;
+    return count;
   };
 
   const handleSave = async () => {
