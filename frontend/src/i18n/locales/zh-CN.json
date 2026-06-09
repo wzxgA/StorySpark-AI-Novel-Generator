@@ -171,5 +171,15 @@
     "generating": "生成中...",
     "currentChapter": "第 {{num}} 章预览",
     "waiting": "等待 AI 响应..."
+  },
+  "selector": {
+    "selectCharacters": "选择角色",
+    "selectItems": "选择物品",
+    "selectWorldBuilding": "选择世界观",
+    "searchPlaceholder": "搜索...",
+    "confirm": "确认",
+    "cancel": "取消",
+    "selected": "已选",
+    "noResults": "无结果"
   }
 }

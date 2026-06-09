@@ -171,5 +171,15 @@
     "generating": "Generating...",
     "currentChapter": "Chapter {{num}} Preview",
     "waiting": "Waiting for AI..."
+  },
+  "selector": {
+    "selectCharacters": "Select Characters",
+    "selectItems": "Select Items",
+    "selectWorldBuilding": "Select World Building",
+    "searchPlaceholder": "Search...",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "selected": "selected",
+    "noResults": "No results"
   }
 }
