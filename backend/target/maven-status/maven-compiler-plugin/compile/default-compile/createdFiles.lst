@@ -11,6 +11,7 @@ com\storyspark\service\ContextManager.class
 com\storyspark\repository\SynopsisRepository.class
 com\storyspark\config\LangChain4jConfig.class
 com\storyspark\model\entity\Chapter.class
+com\storyspark\service\ExportService.class
 com\storyspark\repository\ChapterRepository.class
 com\storyspark\controller\HealthController.class
 com\storyspark\controller\AIConfigController.class
@@ -33,6 +34,7 @@ com\storyspark\config\WebConfig.class
 com\storyspark\service\AIGenerationService$1.class
 com\storyspark\model\enums\ItemType.class
 com\storyspark\service\WorldBuildingService.class
+com\storyspark\controller\ExportController.class
 com\storyspark\model\enums\SynopsisType.class
 com\storyspark\repository\OutlineRepository.class
 com\storyspark\model\dto\ChapterPlanDTO.class

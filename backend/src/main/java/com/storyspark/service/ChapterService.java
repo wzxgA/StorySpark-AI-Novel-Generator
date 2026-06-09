@@ -69,6 +69,13 @@ public class ChapterService {
         return toDTO(chapter);
     }
 
+    @Transactional(readOnly = true)
+    public List<ChapterDTO> findByNovelIdWithContent(Long novelId) {
+        return chapterRepository.findByNovelIdOrderByChapterNumberAsc(novelId).stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     public void delete(Long novelId, Long id) {
         Chapter chapter = chapterRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chapter not found"));
@@ -84,7 +91,7 @@ public class ChapterService {
         return dto;
     }
 
-    private ChapterDTO toDTO(Chapter chapter) {
+    ChapterDTO toDTO(Chapter chapter) {
         ChapterDTO dto = new ChapterDTO();
         dto.setId(chapter.getId());
         dto.setNovelId(chapter.getNovel().getId());

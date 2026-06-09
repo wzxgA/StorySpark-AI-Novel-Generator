@@ -7,6 +7,7 @@ D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\ChapterController.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\ChapterPlanController.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\CharacterController.java
+D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\ExportController.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\HealthController.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\ItemController.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\NovelController.java
@@ -46,6 +47,7 @@ D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ChapterService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\CharacterService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ContextManager.java
+D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ExportService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ItemService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\NovelService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\OutlineService.java

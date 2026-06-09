@@ -6,7 +6,7 @@
     "batchGen": "批量生成",
     "newNovelTitle": "新建小说",
     "settingsTitle": "AI 设置",
-    "exportTitle": "导出 (第7阶段上线)",
+    "exportTitle": "导出小说",
     "batchGenTitle": "批量生成"
   },
   "sidebar": {
@@ -171,6 +171,14 @@
     "generating": "生成中...",
     "currentChapter": "第 {{num}} 章预览",
     "waiting": "等待 AI 响应..."
+  },
+  "export": {
+    "title": "导出小说",
+    "currentChapter": "导出当前章节",
+    "allChapters": "导出全部章节",
+    "formatMarkdown": "Markdown (.md)",
+    "formatTxt": "纯文本 (.txt)",
+    "formatPdf": "PDF (.pdf)"
   },
   "contextMenu": {
     "rename": "重命名",

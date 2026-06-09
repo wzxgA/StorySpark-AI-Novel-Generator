@@ -1,28 +1,43 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { spawn, ChildProcess } from 'child_process'
 import path from 'path'
 import http from 'http'
+import net from 'net'
 
 let mainWindow: BrowserWindow | null = null
 let javaProcess: ChildProcess | null = null
+let actualPort: number = 18080
 
-const JAVA_PORT = 18080
 const isDev = process.env.VITE_DEV_SERVER_URL !== undefined
 
 function getBackendJarPath(): string {
   if (isDev) {
-    // In dev mode, expect the backend JAR to be in the backend/target directory
     return path.join(__dirname, '..', '..', 'backend', 'target', 'storyspark-backend-0.1.0-SNAPSHOT.jar')
   }
-  // In production, the JAR is in the extraResources
   return path.join(process.resourcesPath, 'backend.jar')
 }
 
-function startJavaBackend(): void {
-  const jarPath = getBackendJarPath()
-  console.log(`[Main] Starting Java backend: ${jarPath}`)
+function isPortAvailable(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const server = net.createServer()
+    server.once('error', () => resolve(false))
+    server.once('listening', () => { server.close(); resolve(true) })
+    server.listen(port, '127.0.0.1')
+  })
+}
 
-  javaProcess = spawn('java', ['-jar', jarPath, `--server.port=${JAVA_PORT}`], {
+async function findAvailablePort(): Promise<number> {
+  for (let port = 18080; port <= 18089; port++) {
+    if (await isPortAvailable(port)) return port
+  }
+  throw new Error('No available port in range 18080-18089')
+}
+
+function startJavaBackend(port: number): void {
+  const jarPath = getBackendJarPath()
+  console.log(`[Main] Starting Java backend on port ${port}: ${jarPath}`)
+
+  javaProcess = spawn('java', ['-jar', jarPath, `--server.port=${port}`], {
     stdio: ['ignore', 'pipe', 'pipe'],
   })
 
@@ -48,7 +63,6 @@ function stopJavaBackend(): void {
   if (javaProcess) {
     console.log('[Main] Stopping Java backend...')
     javaProcess.kill('SIGTERM')
-    // Force kill after 10 seconds
     setTimeout(() => {
       if (javaProcess) {
         javaProcess.kill('SIGKILL')
@@ -58,7 +72,7 @@ function stopJavaBackend(): void {
   }
 }
 
-function waitForBackend(retries: number = 30, delay: number = 1000): Promise<void> {
+function waitForBackend(port: number, retries: number = 30, delay: number = 1000): Promise<void> {
   return new Promise((resolve, reject) => {
     const check = (remaining: number) => {
       if (remaining <= 0) {
@@ -66,9 +80,9 @@ function waitForBackend(retries: number = 30, delay: number = 1000): Promise<voi
         return
       }
 
-      const req = http.get(`http://localhost:${JAVA_PORT}/actuator/health`, (res) => {
+      const req = http.get(`http://localhost:${port}/actuator/health`, (res) => {
         if (res.statusCode === 200) {
-          console.log('[Main] Backend is ready')
+          console.log(`[Main] Backend is ready on port ${port}`)
           resolve()
         } else {
           setTimeout(() => check(remaining - 1), delay)
@@ -115,10 +129,19 @@ function createWindow(): void {
 }
 
 app.whenReady().then(async () => {
-  startJavaBackend()
+  try {
+    actualPort = await findAvailablePort()
+  } catch (err) {
+    console.error('[Main] Port detection failed, using default 18080:', err)
+    actualPort = 18080
+  }
+
+  ipcMain.handle('get-backend-port', () => actualPort)
+
+  startJavaBackend(actualPort)
 
   try {
-    await waitForBackend()
+    await waitForBackend(actualPort)
   } catch (err) {
     console.error('[Main] Could not connect to backend:', err)
   }

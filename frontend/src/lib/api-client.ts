@@ -1,9 +1,26 @@
 import type { TokenEvent, DoneEvent, ErrorEvent, BatchStartEvent, ChapterStartEvent, ChapterDoneEvent, BatchDoneEvent } from '../types';
 
-const BASE_URL = 'http://localhost:18080'
+let _baseUrl: string | null = null;
+
+export async function getBaseUrl(): Promise<string> {
+  if (_baseUrl) return _baseUrl;
+  const api = (window as any).electronAPI;
+  if (api?.getBackendPort) {
+    try {
+      const port = await api.getBackendPort();
+      _baseUrl = `http://localhost:${port}`;
+    } catch {
+      _baseUrl = 'http://localhost:18080';
+    }
+  } else {
+    _baseUrl = 'http://localhost:18080';
+  }
+  return _baseUrl;
+}
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const base = await getBaseUrl();
+  const res = await fetch(`${base}${path}`, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -38,7 +55,8 @@ export function streamGenerate(
 
   (async () => {
     try {
-      const res = await fetch(`${BASE_URL}${path}`, {
+      const base = await getBaseUrl();
+      const res = await fetch(`${base}${path}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
         body: JSON.stringify(body),
@@ -67,9 +85,8 @@ export function streamGenerate(
 
         buffer += decoder.decode(value, { stream: true });
 
-        // Parse SSE frames
         const lines = buffer.split('\n');
-        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+        buffer = lines.pop() || '';
 
         for (const line of lines) {
           if (line.startsWith('event:')) {

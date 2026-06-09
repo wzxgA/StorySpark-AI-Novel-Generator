@@ -1,18 +1,26 @@
+import { useState, useRef } from 'react';
 import { Plus, Settings, FileDown, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLayoutStore } from '../../stores/useLayoutStore';
 import { useNovelStore } from '../../stores/useNovelStore';
+import ExportDropdown from '../export/ExportDropdown';
 
 export default function Toolbar() {
   const { t } = useTranslation();
   const selectedNovelId = useNovelStore((s) => s.selectedNovelId);
   const createNovel = useNovelStore((s) => s.create);
   const openTab = useLayoutStore((s) => s.openTab);
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportBtnRef = useRef<HTMLButtonElement>(null);
 
   const handleCreateNovel = async () => {
     const title = prompt(`${t('sidebar.novelTitle')}:`);
     if (!title?.trim()) return;
     await createNovel({ title: title.trim(), description: '' });
+  };
+
+  const handleExportClick = () => {
+    setExportOpen((prev) => !prev);
   };
 
   return (
@@ -40,8 +48,10 @@ export default function Toolbar() {
       <div className="flex-1" />
 
       <button
-        disabled
-        className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-500 cursor-not-allowed rounded"
+        ref={exportBtnRef}
+        onClick={handleExportClick}
+        disabled={!selectedNovelId}
+        className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-300 hover:text-gray-100 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed rounded transition-colors"
         title={t('toolbar.exportTitle')}
       >
         <FileDown className="w-4 h-4" />
@@ -57,6 +67,12 @@ export default function Toolbar() {
         <BookOpen className="w-4 h-4" />
         {t('toolbar.batchGen')}
       </button>
+
+      <ExportDropdown
+        open={exportOpen}
+        anchorRect={exportBtnRef.current?.getBoundingClientRect() ?? null}
+        onClose={() => setExportOpen(false)}
+      />
     </div>
   );
 }

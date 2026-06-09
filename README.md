@@ -196,7 +196,7 @@ npm run electron:build
 | **4. 批量生成与章节计划** | ✅ 已完成 | 批量生成面板、章节计划匹配、进度追踪、弹窗多选组件 |
 | **5. 智能上下文管理** | ✅ 已完成 | Token 计数、三层自动摘要、上下文预算分配、System Prompt 增强 |
 | **6. 高级交互体验** | ✅ 已完成 | @dnd-kit 标签页拖拽排序、键盘快捷键（Ctrl+N/G/S/Enter）、右键菜单 |
-| **7. 导出与分发** | 🔲 规划中 | Markdown/TXT/PDF 导出、JRE 精简打包、端口冲突处理 |
+| **7. 导出与分发** | ✅ 已完成 | Markdown/TXT/PDF 导出、动态端口 fallback、jlink 精简 JRE、electron-builder 打包就绪 |
 
 ## 许可证
 

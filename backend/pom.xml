@@ -65,6 +65,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- PDF generation (OpenPDF ~2MB, CJK font support) -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>2.0.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -72,6 +79,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.storyspark.StorySparkApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>

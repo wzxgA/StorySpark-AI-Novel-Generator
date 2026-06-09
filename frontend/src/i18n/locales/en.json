@@ -6,7 +6,7 @@
     "batchGen": "Batch Gen",
     "newNovelTitle": "New Novel",
     "settingsTitle": "AI Settings",
-    "exportTitle": "Export (Coming in Phase 7)",
+    "exportTitle": "Export Novel",
     "batchGenTitle": "Batch Generate"
   },
   "sidebar": {
@@ -171,6 +171,14 @@
     "generating": "Generating...",
     "currentChapter": "Chapter {{num}} Preview",
     "waiting": "Waiting for AI..."
+  },
+  "export": {
+    "title": "Export Novel",
+    "currentChapter": "Export Current Chapter",
+    "allChapters": "Export All Chapters",
+    "formatMarkdown": "Markdown (.md)",
+    "formatTxt": "Plain Text (.txt)",
+    "formatPdf": "PDF (.pdf)"
   },
   "contextMenu": {
     "rename": "Rename",
