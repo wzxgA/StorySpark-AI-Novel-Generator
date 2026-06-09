@@ -132,9 +132,9 @@
     "rangeEnd": "结束章节",
     "outline": "大纲",
     "outlinePlaceholder": "此章节范围的大纲...",
-    "characterIds": "角色 ID (JSON 数组)",
-    "itemIds": "物品 ID (JSON 数组)",
-    "worldBuildingIds": "世界观 ID (JSON 数组)",
+    "characterIds": "角色",
+    "itemIds": "物品",
+    "worldBuildingIds": "世界观",
     "notes": "备注",
     "notesPlaceholder": "其他备注...",
     "deleteConfirm": "删除此章节计划？"
