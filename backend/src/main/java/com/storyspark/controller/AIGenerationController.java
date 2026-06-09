@@ -66,14 +66,28 @@ public class AIGenerationController {
 
     /**
      * Confirm a batch-generated chapter (DRAFT → COMPLETED).
+     * Optionally accepts content/wordCount as a safety net in case
+     * the streaming onComplete didn't persist them.
      */
     @PostMapping("/chapters/{chapterId}/confirm")
     public ResponseEntity<?> confirmChapter(
             @PathVariable Long novelId,
-            @PathVariable Long chapterId) {
+            @PathVariable Long chapterId,
+            @RequestBody(required = false) Map<String, Object> body) {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new RuntimeException("Chapter not found: " + chapterId));
         chapter.setStatus(ChapterStatus.COMPLETED);
+        // Safety net: persist content if streaming save didn't
+        if (body != null) {
+            if (body.get("content") instanceof String c && !c.isEmpty()
+                    && (chapter.getContent() == null || chapter.getContent().isEmpty())) {
+                chapter.setContent(c);
+            }
+            if (body.get("wordCount") instanceof Number wc
+                    && chapter.getWordCount() == 0) {
+                chapter.setWordCount(wc.intValue());
+            }
+        }
         chapterRepository.save(chapter);
         return ResponseEntity.ok(Map.of("status", "confirmed"));
     }

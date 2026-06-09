@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { streamGenerate, apiClient } from '../lib/api-client';
 import type { StreamCallbacks } from '../lib/api-client';
+import { useChapterStore } from './useChapterStore';
 
 export interface ChapterStatus {
   chapterNumber: number;
@@ -164,12 +165,18 @@ export const useBatchGenerationStore = create<BatchGenerationState>((set, get) =
   },
 
   confirmChapter: async (novelId, chapterId) => {
-    await apiClient.post(`/api/novels/${novelId}/chapters/${chapterId}/confirm`, {});
+    const gc = get().generatedChapters.find((g) => g.chapterId === chapterId);
+    await apiClient.post(`/api/novels/${novelId}/chapters/${chapterId}/confirm`, {
+      content: gc?.content || '',
+      wordCount: gc?.wordCount || 0,
+    });
     set((s) => ({
       generatedChapters: s.generatedChapters.map((gc) =>
         gc.chapterId === chapterId ? { ...gc, confirmed: true } : gc
       ),
     }));
+    // Refresh sidebar chapter list so the confirmed chapter appears immediately
+    useChapterStore.getState().fetchAll(novelId);
   },
 
   discardChapter: async (novelId, chapterId) => {
