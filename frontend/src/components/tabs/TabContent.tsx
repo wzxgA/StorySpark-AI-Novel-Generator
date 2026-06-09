@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useLayoutStore } from '../../stores/useLayoutStore';
 import { useNovelStore } from '../../stores/useNovelStore';
 import NovelEditor from '../editors/NovelEditor';
@@ -8,9 +9,10 @@ import WorldBuildingEditor from '../editors/WorldBuildingEditor';
 import OutlineEditor from '../editors/OutlineEditor';
 import SynopsisEditor from '../editors/SynopsisEditor';
 import ChapterPlanEditor from '../editors/ChapterPlanEditor';
-import AIConfigPage from '../settings/AIConfigPage';
+import SettingsPage from '../settings/SettingsPage';
 
 export default function TabContent() {
+  const { t } = useTranslation();
   const openTabs = useLayoutStore((s) => s.openTabs);
   const activeTabId = useLayoutStore((s) => s.activeTabId);
   const selectedNovelId = useNovelStore((s) => s.selectedNovelId);
@@ -22,7 +24,7 @@ export default function TabContent() {
       <div className="h-full flex items-center justify-center text-gray-600">
         <div className="text-center">
           <p className="text-4xl mb-2">&#x2728;</p>
-          <p className="text-sm">Select an item from the project tree to start editing</p>
+          <p className="text-sm">{t('tabs.selectItem')}</p>
         </div>
       </div>
     );
@@ -47,9 +49,9 @@ export default function TabContent() {
       return <SynopsisEditor novelId={novelId} entityId={activeTab.entityId} />;
     case 'chapter-plan':
       return <ChapterPlanEditor novelId={novelId} entityId={activeTab.entityId} />;
-    case 'ai-config':
-      return <AIConfigPage />;
+    case 'settings':
+      return <SettingsPage />;
     default:
-      return <div className="p-4 text-gray-400">Unknown tab type</div>;
+      return <div className="p-4 text-gray-400">{t('tabs.unknownType')}</div>;
   }
 }

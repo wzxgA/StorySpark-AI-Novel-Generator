@@ -7,6 +7,7 @@ com\storyspark\controller\CharacterController.class
 com\storyspark\controller\ItemController.class
 com\storyspark\config\EncryptionUtil.class
 com\storyspark\repository\SynopsisRepository.class
+com\storyspark\config\LangChain4jConfig.class
 com\storyspark\model\entity\Chapter.class
 com\storyspark\repository\ChapterRepository.class
 com\storyspark\controller\HealthController.class
@@ -23,8 +24,10 @@ com\storyspark\service\ChapterPlanService.class
 com\storyspark\model\entity\AIConfig.class
 com\storyspark\repository\ItemRepository.class
 com\storyspark\model\enums\WorldBuildingCategory.class
+com\storyspark\service\AIGenerationService.class
 com\storyspark\StorySparkApplication.class
 com\storyspark\config\WebConfig.class
+com\storyspark\service\AIGenerationService$1.class
 com\storyspark\model\enums\ItemType.class
 com\storyspark\service\WorldBuildingService.class
 com\storyspark\model\enums\SynopsisType.class
@@ -45,6 +48,7 @@ com\storyspark\model\entity\Outline.class
 com\storyspark\config\DataSourceConfig.class
 com\storyspark\service\ItemService.class
 com\storyspark\controller\ChapterController.class
+com\storyspark\controller\AIGenerationController.class
 com\storyspark\repository\NovelRepository.class
 com\storyspark\model\dto\GenerationRequest.class
 com\storyspark\repository\WorldBuildingRepository.class

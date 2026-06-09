@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import EntityFormWrapper from '../shared/EntityFormWrapper';
 import { useSynopsisStore } from '../../stores/useSynopsisStore';
 import { useLayoutStore } from '../../stores/useLayoutStore';
@@ -12,6 +13,7 @@ interface Props {
 const TYPE_OPTIONS: SynopsisType[] = ['MANUAL', 'AUTO'];
 
 export default function SynopsisEditor({ novelId, entityId }: Props) {
+  const { t } = useTranslation();
   const { synopses, fetchById, create, update, remove } = useSynopsisStore();
   const { closeTab, updateTabTitle, replaceTabId } = useLayoutStore();
   const [form, setForm] = useState({
@@ -70,7 +72,7 @@ export default function SynopsisEditor({ novelId, entityId }: Props) {
   };
 
   const handleDelete = async () => {
-    if (!entityId || !confirm('Delete this synopsis?')) return;
+    if (!entityId || !confirm(t('synopsis.deleteConfirm'))) return;
     try {
       await remove(novelId, entityId);
       closeTab(`synopsis-${entityId}`);
@@ -81,7 +83,7 @@ export default function SynopsisEditor({ novelId, entityId }: Props) {
 
   return (
     <EntityFormWrapper
-      title={entityId ? form.title || 'Synopsis' : 'New Synopsis'}
+      title={entityId ? form.title || t('synopsis.fallback') : t('synopsis.new')}
       loading={loading}
       error={error}
       onSave={handleSave}
@@ -89,18 +91,18 @@ export default function SynopsisEditor({ novelId, entityId }: Props) {
     >
       <div className="space-y-4 max-w-2xl">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Title</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('synopsis.title')}</label>
           <input
             type="text"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500"
-            placeholder="Synopsis title"
+            placeholder={t('synopsis.titlePlaceholder')}
           />
         </div>
         <div className="flex gap-4">
           <div className="w-32">
-            <label className="block text-sm text-gray-400 mb-1">Range Start</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('synopsis.rangeStart')}</label>
             <input
               type="number"
               min={1}
@@ -110,7 +112,7 @@ export default function SynopsisEditor({ novelId, entityId }: Props) {
             />
           </div>
           <div className="w-32">
-            <label className="block text-sm text-gray-400 mb-1">Range End</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('synopsis.rangeEnd')}</label>
             <input
               type="number"
               min={1}
@@ -120,26 +122,26 @@ export default function SynopsisEditor({ novelId, entityId }: Props) {
             />
           </div>
           <div className="w-32">
-            <label className="block text-sm text-gray-400 mb-1">Type</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('synopsis.type')}</label>
             <select
               value={form.summaryType}
               onChange={(e) => setForm({ ...form, summaryType: e.target.value as SynopsisType })}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500"
             >
-              {TYPE_OPTIONS.map((t) => (
-                <option key={t} value={t}>{t}</option>
+              {TYPE_OPTIONS.map((tp) => (
+                <option key={tp} value={tp}>{tp}</option>
               ))}
             </select>
           </div>
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Content</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('synopsis.content')}</label>
           <textarea
             value={form.content}
             onChange={(e) => setForm({ ...form, content: e.target.value })}
             rows={12}
             className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500 resize-y"
-            placeholder="Summarize the key events, character development, and plot points..."
+            placeholder={t('synopsis.contentPlaceholder')}
           />
         </div>
       </div>

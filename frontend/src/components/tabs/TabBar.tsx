@@ -1,4 +1,5 @@
 import { X, BookOpen, Users, Package, Globe, FileText, List, ScrollText, Map, Settings } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useLayoutStore } from '../../stores/useLayoutStore';
 import type { EntityType } from '../../types';
 
@@ -11,16 +12,17 @@ const typeIcons: Record<EntityType, typeof BookOpen> = {
   outline: Map,
   synopsis: List,
   'chapter-plan': ScrollText,
-  'ai-config': Settings,
+  'settings': Settings,
 };
 
 export default function TabBar() {
+  const { t } = useTranslation();
   const { openTabs, activeTabId, setActiveTab, closeTab } = useLayoutStore();
 
   if (openTabs.length === 0) {
     return (
       <div className="flex items-center px-3 py-1.5 border-b border-gray-700 text-xs text-gray-500 select-none">
-        No tabs open — select an item from the project tree
+        {t('tabs.noTabs')}
       </div>
     );
   }

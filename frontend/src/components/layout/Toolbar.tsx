@@ -1,8 +1,10 @@
 import { Plus, Settings, FileDown, BookOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useLayoutStore } from '../../stores/useLayoutStore';
 import { useNovelStore } from '../../stores/useNovelStore';
 
 export default function Toolbar() {
+  const { t } = useTranslation();
   const selectedNovelId = useNovelStore((s) => s.selectedNovelId);
   const openTab = useLayoutStore((s) => s.openTab);
 
@@ -11,22 +13,22 @@ export default function Toolbar() {
       <span className="text-sm font-semibold text-blue-400 mr-2">StorySpark</span>
 
       <button
-        onClick={() => selectedNovelId && openTab('chapter', null, 'New Chapter')}
+        onClick={() => selectedNovelId && openTab('chapter', null, t('chapter.new'))}
         disabled={!selectedNovelId}
         className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-300 hover:text-gray-100 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed rounded transition-colors"
-        title="New Chapter (Ctrl+N)"
+        title={t('toolbar.newChapterTitle')}
       >
         <Plus className="w-4 h-4" />
-        New Chapter
+        {t('toolbar.newChapter')}
       </button>
 
       <button
-        onClick={() => openTab('ai-config', null, 'AI Config')}
+        onClick={() => openTab('settings', null, t('settings.title'))}
         className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-300 hover:text-gray-100 hover:bg-gray-700 rounded transition-colors"
-        title="AI Settings"
+        title={t('toolbar.settingsTitle')}
       >
         <Settings className="w-4 h-4" />
-        AI Config
+        {t('toolbar.settings')}
       </button>
 
       <div className="flex-1" />
@@ -34,19 +36,19 @@ export default function Toolbar() {
       <button
         disabled
         className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-500 cursor-not-allowed rounded"
-        title="Export (Coming in Phase 7)"
+        title={t('toolbar.exportTitle')}
       >
         <FileDown className="w-4 h-4" />
-        Export
+        {t('toolbar.export')}
       </button>
 
       <button
         disabled
         className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-500 cursor-not-allowed rounded"
-        title="Batch Generate (Coming in Phase 4)"
+        title={t('toolbar.batchGenTitle')}
       >
         <BookOpen className="w-4 h-4" />
-        Batch Gen
+        {t('toolbar.batchGen')}
       </button>
     </div>
   );

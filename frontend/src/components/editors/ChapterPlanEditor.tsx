@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import EntityFormWrapper from '../shared/EntityFormWrapper';
 import { useChapterPlanStore } from '../../stores/useChapterPlanStore';
 import { useLayoutStore } from '../../stores/useLayoutStore';
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function ChapterPlanEditor({ novelId, entityId }: Props) {
+  const { t } = useTranslation();
   const { plans, fetchById, create, update, remove } = useChapterPlanStore();
   const { closeTab, updateTabTitle, replaceTabId } = useLayoutStore();
   const [form, setForm] = useState({
@@ -72,7 +74,7 @@ export default function ChapterPlanEditor({ novelId, entityId }: Props) {
   };
 
   const handleDelete = async () => {
-    if (!entityId || !confirm('Delete this chapter plan?')) return;
+    if (!entityId || !confirm(t('chapterPlan.deleteConfirm'))) return;
     try {
       await remove(novelId, entityId);
       closeTab(`chapter-plan-${entityId}`);
@@ -83,7 +85,7 @@ export default function ChapterPlanEditor({ novelId, entityId }: Props) {
 
   return (
     <EntityFormWrapper
-      title={entityId ? `Plan Ch.${form.chapterRangeStart}-${form.chapterRangeEnd}` : 'New Chapter Plan'}
+      title={entityId ? `Plan Ch.${form.chapterRangeStart}-${form.chapterRangeEnd}` : t('chapterPlan.new')}
       loading={loading}
       error={error}
       onSave={handleSave}
@@ -92,7 +94,7 @@ export default function ChapterPlanEditor({ novelId, entityId }: Props) {
       <div className="space-y-4 max-w-2xl">
         <div className="flex gap-4">
           <div className="w-32">
-            <label className="block text-sm text-gray-400 mb-1">Range Start</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('chapterPlan.rangeStart')}</label>
             <input
               type="number"
               min={1}
@@ -102,7 +104,7 @@ export default function ChapterPlanEditor({ novelId, entityId }: Props) {
             />
           </div>
           <div className="w-32">
-            <label className="block text-sm text-gray-400 mb-1">Range End</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('chapterPlan.rangeEnd')}</label>
             <input
               type="number"
               min={1}
@@ -113,17 +115,17 @@ export default function ChapterPlanEditor({ novelId, entityId }: Props) {
           </div>
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Outline</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('chapterPlan.outline')}</label>
           <textarea
             value={form.outline}
             onChange={(e) => setForm({ ...form, outline: e.target.value })}
             rows={6}
             className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500 resize-none"
-            placeholder="Outline for this chapter range..."
+            placeholder={t('chapterPlan.outlinePlaceholder')}
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Character IDs (JSON array)</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('chapterPlan.characterIds')}</label>
           <input
             type="text"
             value={form.characterIds}
@@ -133,7 +135,7 @@ export default function ChapterPlanEditor({ novelId, entityId }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Item IDs (JSON array)</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('chapterPlan.itemIds')}</label>
           <input
             type="text"
             value={form.itemIds}
@@ -143,7 +145,7 @@ export default function ChapterPlanEditor({ novelId, entityId }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">World Building IDs (JSON array)</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('chapterPlan.worldBuildingIds')}</label>
           <input
             type="text"
             value={form.worldBuildingIds}
@@ -153,13 +155,13 @@ export default function ChapterPlanEditor({ novelId, entityId }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Notes</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('chapterPlan.notes')}</label>
           <textarea
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             rows={3}
             className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500 resize-none"
-            placeholder="Any additional notes..."
+            placeholder={t('chapterPlan.notesPlaceholder')}
           />
         </div>
       </div>

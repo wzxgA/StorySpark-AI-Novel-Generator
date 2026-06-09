@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import EntityFormWrapper from '../shared/EntityFormWrapper';
 import { useWorldBuildingStore } from '../../stores/useWorldBuildingStore';
 import { useLayoutStore } from '../../stores/useLayoutStore';
@@ -12,6 +13,7 @@ interface Props {
 const CATEGORY_OPTIONS: WorldBuildingCategory[] = ['GEOGRAPHY', 'HISTORY', 'MAGIC_SYSTEM', 'POLITICS', 'CULTURE', 'RACES', 'OTHER'];
 
 export default function WorldBuildingEditor({ novelId, entityId }: Props) {
+  const { t } = useTranslation();
   const { items, fetchById, create, update, remove } = useWorldBuildingStore();
   const { closeTab, updateTabTitle, replaceTabId } = useLayoutStore();
   const [form, setForm] = useState({ title: '', content: '', category: 'OTHER' as WorldBuildingCategory });
@@ -52,7 +54,7 @@ export default function WorldBuildingEditor({ novelId, entityId }: Props) {
   };
 
   const handleDelete = async () => {
-    if (!entityId || !confirm('Delete this world building entry?')) return;
+    if (!entityId || !confirm(t('worldbuilding.deleteConfirm'))) return;
     try {
       await remove(novelId, entityId);
       closeTab(`worldbuilding-${entityId}`);
@@ -63,7 +65,7 @@ export default function WorldBuildingEditor({ novelId, entityId }: Props) {
 
   return (
     <EntityFormWrapper
-      title={entityId ? form.title || 'World Entry' : 'New World Entry'}
+      title={entityId ? form.title || t('worldbuilding.fallback') : t('worldbuilding.new')}
       loading={loading}
       error={error}
       onSave={handleSave}
@@ -72,17 +74,17 @@ export default function WorldBuildingEditor({ novelId, entityId }: Props) {
       <div className="space-y-4 max-w-2xl">
         <div className="flex gap-4">
           <div className="flex-1">
-            <label className="block text-sm text-gray-400 mb-1">Title</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('worldbuilding.title')}</label>
             <input
               type="text"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500"
-              placeholder="Entry title"
+              placeholder={t('worldbuilding.titlePlaceholder')}
             />
           </div>
           <div className="w-44">
-            <label className="block text-sm text-gray-400 mb-1">Category</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('worldbuilding.category')}</label>
             <select
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value as WorldBuildingCategory })}
@@ -95,13 +97,13 @@ export default function WorldBuildingEditor({ novelId, entityId }: Props) {
           </div>
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Content</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('worldbuilding.content')}</label>
           <textarea
             value={form.content}
             onChange={(e) => setForm({ ...form, content: e.target.value })}
             rows={12}
             className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500 resize-y"
-            placeholder="Describe this world building element..."
+            placeholder={t('worldbuilding.contentPlaceholder')}
           />
         </div>
       </div>

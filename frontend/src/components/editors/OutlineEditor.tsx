@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import EntityFormWrapper from '../shared/EntityFormWrapper';
 import { useOutlineStore } from '../../stores/useOutlineStore';
 
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export default function OutlineEditor({ novelId }: Props) {
+  const { t } = useTranslation();
   const { outline, fetchByNovelId, update } = useOutlineStore();
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,12 +33,9 @@ export default function OutlineEditor({ novelId }: Props) {
   };
 
   return (
-    <EntityFormWrapper title="Outline" loading={loading} error={error} onSave={handleSave}>
+    <EntityFormWrapper title={t('outline.title')} loading={loading} error={error} onSave={handleSave}>
       <div className="space-y-2">
-        <p className="text-xs text-gray-500">
-          Write your story outline here. Use a hierarchical structure (indented text, markdown headings, or JSON tree).
-          This will be included in the AI context when generating chapters.
-        </p>
+        <p className="text-xs text-gray-500">{t('outline.helpText')}</p>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}

@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { useAIConfigStore } from '../../stores/useAIConfigStore';
 
-export default function AIConfigPage() {
+interface Props {
+  embedded?: boolean;
+}
+
+export default function AIConfigPage({ embedded }: Props) {
+  const { t } = useTranslation();
   const { config, loading, testing, testResult, fetchConfig, saveConfig, testConnection, clearTestResult } = useAIConfigStore();
   const [form, setForm] = useState({
     apiUrl: 'https://api.openai.com/v1',
@@ -49,29 +55,33 @@ export default function AIConfigPage() {
     await testConnection(form);
   };
 
-  return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 shrink-0">
-        <h2 className="text-lg font-semibold text-gray-100">AI Configuration</h2>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm rounded transition-colors"
-        >
-          {saving ? 'Saving...' : 'Save'}
-        </button>
-      </div>
-
-      {error && (
-        <div className="mx-4 mt-3 px-3 py-2 bg-red-900/30 border border-red-800 rounded text-red-400 text-sm">
-          {error}
+  const content = (
+    <>
+      {!embedded && (
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 shrink-0">
+          <h2 className="text-lg font-semibold text-gray-100">{t('settings.aiConfig')}</h2>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm rounded transition-colors"
+          >
+            {saving ? t('settings.saving') : t('settings.save')}
+          </button>
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="space-y-4 max-w-xl">
+      {error && (
+        <div className={embedded ? 'mb-4' : 'mx-4 mt-3'}>
+          <div className="px-3 py-2 bg-red-900/30 border border-red-800 rounded text-red-400 text-sm">
+            {error}
+          </div>
+        </div>
+      )}
+
+      <div className={embedded ? '' : 'flex-1 overflow-y-auto p-4'}>
+        <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-1">API URL</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('settings.apiUrl')}</label>
             <input
               type="text"
               value={form.apiUrl}
@@ -79,13 +89,11 @@ export default function AIConfigPage() {
               className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500"
               placeholder="https://api.openai.com/v1"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Supports OpenAI, DeepSeek, Qwen, Ollama, and other OpenAI-compatible APIs.
-            </p>
+            <p className="text-xs text-gray-500 mt-1">{t('settings.apiUrlNote')}</p>
           </div>
 
           <div>
-            <label className="block text-sm text-gray-400 mb-1">API Key</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('settings.apiKey')}</label>
             <input
               type="password"
               value={form.apiKey}
@@ -96,7 +104,7 @@ export default function AIConfigPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Model</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('settings.model')}</label>
             <input
               type="text"
               value={form.model}
@@ -123,7 +131,7 @@ export default function AIConfigPage() {
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Words/Chapter</label>
+              <label className="block text-sm text-gray-400 mb-1">{t('settings.wordsPerChapter')}</label>
               <input
                 type="number"
                 value={form.chapterWordCount}
@@ -132,7 +140,7 @@ export default function AIConfigPage() {
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Temperature</label>
+              <label className="block text-sm text-gray-400 mb-1">{t('settings.temperature')}</label>
               <input
                 type="number"
                 step="0.1"
@@ -144,7 +152,7 @@ export default function AIConfigPage() {
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Max Tokens</label>
+              <label className="block text-sm text-gray-400 mb-1">{t('settings.maxTokens')}</label>
               <input
                 type="number"
                 value={form.maxTokens}
@@ -154,27 +162,40 @@ export default function AIConfigPage() {
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className={`pt-2 flex gap-2 ${embedded ? '' : ''}`}>
             <button
               onClick={handleTest}
               disabled={testing || !form.apiUrl || !form.apiKey}
               className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed text-gray-200 text-sm rounded transition-colors"
             >
               {testing ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-              Test Connection
+              {t('settings.testConnection')}
             </button>
-
-            {testResult && (
-              <div className={`mt-3 px-3 py-2 rounded text-sm flex items-center gap-2 ${
-                testResult.success ? 'bg-green-900/30 border border-green-800 text-green-400' : 'bg-red-900/30 border border-red-800 text-red-400'
-              }`}>
-                {testResult.success ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                {testResult.message}
-              </div>
+            {embedded && (
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm rounded transition-colors"
+              >
+                {saving ? t('settings.saving') : t('settings.save')}
+              </button>
             )}
           </div>
+
+          {testResult && (
+            <div className={`px-3 py-2 rounded text-sm flex items-center gap-2 ${
+              testResult.success ? 'bg-green-900/30 border border-green-800 text-green-400' : 'bg-red-900/30 border border-red-800 text-red-400'
+            }`}>
+              {testResult.success ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+              {testResult.message}
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
+
+  if (embedded) return content;
+
+  return <div className="h-full flex flex-col">{content}</div>;
 }

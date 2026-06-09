@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, Users, Package, Globe, FileText, List, ScrollText, Map } from 'lucide-react';
 import TreeNode from './TreeNode';
 import { useNovelStore } from '../../stores/useNovelStore';
@@ -11,6 +12,7 @@ import { useChapterPlanStore } from '../../stores/useChapterPlanStore';
 import { useLayoutStore } from '../../stores/useLayoutStore';
 
 export default function ProjectTree() {
+  const { t } = useTranslation();
   const { novels, selectedNovelId, fetchAll: fetchNovels, create: createNovel, selectNovel } = useNovelStore();
   const { chapters, fetchAll: fetchChapters } = useChapterStore();
   const { characters, fetchAll: fetchCharacters } = useCharacterStore();
@@ -49,7 +51,7 @@ export default function ProjectTree() {
   }, []);
 
   const handleCreateNovel = async () => {
-    const title = prompt('Novel title:');
+    const title = prompt(`${t('sidebar.novelTitle')}:`);
     if (!title?.trim()) return;
     await createNovel({ title: title.trim(), description: '' });
   };
@@ -58,12 +60,12 @@ export default function ProjectTree() {
     return (
       <div className="h-full flex flex-col items-center justify-center p-6 text-center">
         <BookOpen className="w-12 h-12 text-gray-600 mb-3" />
-        <p className="text-gray-400 text-sm mb-4">No novel yet</p>
+        <p className="text-gray-400 text-sm mb-4">{t('sidebar.noNovelYet')}</p>
         <button
           onClick={handleCreateNovel}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded transition-colors"
         >
-          Create Your First Novel
+          {t('sidebar.createFirstNovel')}
         </button>
       </div>
     );
@@ -91,22 +93,22 @@ export default function ProjectTree() {
       <div className="py-1">
         {/* Outline */}
         <TreeNode
-          label="Outline"
+          label={t('sidebar.outline')}
           icon={<Map className="w-3.5 h-3.5 text-yellow-400" />}
           expanded={false}
           onToggle={() => {}}
-          onClick={() => selectedNovelId && openTab('outline', selectedNovelId, 'Outline')}
+          onClick={() => selectedNovelId && openTab('outline', selectedNovelId, t('sidebar.outline'))}
           children={undefined}
         />
 
         {/* Characters */}
         <TreeNode
-          label="Characters"
+          label={t('sidebar.characters')}
           icon={<Users className="w-3.5 h-3.5 text-green-400" />}
           count={characters.length}
           expanded={expandedSections.characters}
           onToggle={() => toggleSection('characters')}
-          onAdd={() => selectedNovelId && openTab('character', null, 'New Character')}
+          onAdd={() => selectedNovelId && openTab('character', null, t('sidebar.newCharacter'))}
         >
           {characters.map((c) => (
             <TreeNode
@@ -122,12 +124,12 @@ export default function ProjectTree() {
 
         {/* Items */}
         <TreeNode
-          label="Items"
+          label={t('sidebar.items')}
           icon={<Package className="w-3.5 h-3.5 text-orange-400" />}
           count={items.length}
           expanded={expandedSections.items}
           onToggle={() => toggleSection('items')}
-          onAdd={() => selectedNovelId && openTab('item', null, 'New Item')}
+          onAdd={() => selectedNovelId && openTab('item', null, t('sidebar.newItem'))}
         >
           {items.map((item) => (
             <TreeNode
@@ -143,12 +145,12 @@ export default function ProjectTree() {
 
         {/* World Building */}
         <TreeNode
-          label="World Building"
+          label={t('sidebar.worldBuilding')}
           icon={<Globe className="w-3.5 h-3.5 text-purple-400" />}
           count={worldBuildings.length}
           expanded={expandedSections.worldbuilding}
           onToggle={() => toggleSection('worldbuilding')}
-          onAdd={() => selectedNovelId && openTab('worldbuilding', null, 'New World Entry')}
+          onAdd={() => selectedNovelId && openTab('worldbuilding', null, t('sidebar.newWorldEntry'))}
         >
           {worldBuildings.map((wb) => (
             <TreeNode
@@ -164,12 +166,12 @@ export default function ProjectTree() {
 
         {/* Chapters */}
         <TreeNode
-          label="Chapters"
+          label={t('sidebar.chapters')}
           icon={<FileText className="w-3.5 h-3.5 text-cyan-400" />}
           count={chapters.length}
           expanded={expandedSections.chapters}
           onToggle={() => toggleSection('chapters')}
-          onAdd={() => selectedNovelId && openTab('chapter', null, 'New Chapter')}
+          onAdd={() => selectedNovelId && openTab('chapter', null, t('sidebar.newChapter'))}
         >
           {chapters.map((ch) => (
             <TreeNode
@@ -185,12 +187,12 @@ export default function ProjectTree() {
 
         {/* Chapter Plans */}
         <TreeNode
-          label="Chapter Plans"
+          label={t('sidebar.chapterPlans')}
           icon={<ScrollText className="w-3.5 h-3.5 text-pink-400" />}
           count={plans.length}
           expanded={expandedSections.plans}
           onToggle={() => toggleSection('plans')}
-          onAdd={() => selectedNovelId && openTab('chapter-plan', null, 'New Plan')}
+          onAdd={() => selectedNovelId && openTab('chapter-plan', null, t('sidebar.newPlan'))}
         >
           {plans.map((p) => (
             <TreeNode
@@ -206,12 +208,12 @@ export default function ProjectTree() {
 
         {/* Synopses */}
         <TreeNode
-          label="Synopses"
+          label={t('sidebar.synopses')}
           icon={<List className="w-3.5 h-3.5 text-indigo-400" />}
           count={synopses.length}
           expanded={expandedSections.synopses}
           onToggle={() => toggleSection('synopses')}
-          onAdd={() => selectedNovelId && openTab('synopsis', null, 'New Synopsis')}
+          onAdd={() => selectedNovelId && openTab('synopsis', null, t('sidebar.newSynopsis'))}
         >
           {synopses.map((s) => (
             <TreeNode

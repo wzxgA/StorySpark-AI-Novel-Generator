@@ -1,7 +1,9 @@
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\config\DataSourceConfig.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\config\EncryptionUtil.java
+D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\config\LangChain4jConfig.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\config\WebConfig.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\AIConfigController.java
+D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\AIGenerationController.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\ChapterController.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\ChapterPlanController.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\controller\CharacterController.java
@@ -39,6 +41,7 @@ D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\repository\SynopsisRepository.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\repository\WorldBuildingRepository.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\AIConfigService.java
+D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\AIGenerationService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ChapterPlanService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\ChapterService.java
 D:\DevProject\StorySpark-AI-Novel-Generator\backend\src\main\java\com\storyspark\service\CharacterService.java

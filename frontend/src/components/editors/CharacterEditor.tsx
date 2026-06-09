@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import EntityFormWrapper from '../shared/EntityFormWrapper';
 import { useCharacterStore } from '../../stores/useCharacterStore';
 import { useLayoutStore } from '../../stores/useLayoutStore';
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function CharacterEditor({ novelId, entityId }: Props) {
+  const { t } = useTranslation();
   const { characters, fetchById, create, update, remove } = useCharacterStore();
   const { closeTab, updateTabTitle, replaceTabId } = useLayoutStore();
   const [form, setForm] = useState({ name: '', description: '', traits: '', relationships: '' });
@@ -59,7 +61,7 @@ export default function CharacterEditor({ novelId, entityId }: Props) {
   };
 
   const handleDelete = async () => {
-    if (!entityId || !confirm('Delete this character?')) return;
+    if (!entityId || !confirm(t('character.deleteConfirm'))) return;
     try {
       await remove(novelId, entityId);
       closeTab(`character-${entityId}`);
@@ -70,7 +72,7 @@ export default function CharacterEditor({ novelId, entityId }: Props) {
 
   return (
     <EntityFormWrapper
-      title={entityId ? form.name || 'Character' : 'New Character'}
+      title={entityId ? form.name || t('character.fallback') : t('character.new')}
       loading={loading}
       error={error}
       onSave={handleSave}
@@ -78,27 +80,27 @@ export default function CharacterEditor({ novelId, entityId }: Props) {
     >
       <div className="space-y-4 max-w-2xl">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Name</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('character.name')}</label>
           <input
             type="text"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500"
-            placeholder="Character name"
+            placeholder={t('character.namePlaceholder')}
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Description</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('character.description')}</label>
           <textarea
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             rows={4}
             className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm focus:outline-none focus:border-blue-500 resize-none"
-            placeholder="Character description, background, etc."
+            placeholder={t('character.descriptionPlaceholder')}
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Traits (JSON)</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('character.traits')}</label>
           <textarea
             value={form.traits}
             onChange={(e) => setForm({ ...form, traits: e.target.value })}
@@ -108,7 +110,7 @@ export default function CharacterEditor({ novelId, entityId }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Relationships (JSON)</label>
+          <label className="block text-sm text-gray-400 mb-1">{t('character.relationships')}</label>
           <textarea
             value={form.relationships}
             onChange={(e) => setForm({ ...form, relationships: e.target.value })}

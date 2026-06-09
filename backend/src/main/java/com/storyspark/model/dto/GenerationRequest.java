@@ -1,14 +1,22 @@
 package com.storyspark.model.dto;
 
-/**
- * Placeholder for Phase 3 AI generation. Defines the shape of a generation request.
- */
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class GenerationRequest {
 
+    @NotNull
     private Long novelId;
+
+    @Min(1)
     private int startChapter;
+
+    @Min(1)
     private int endChapter;
+
     private String model;
+
+    @Min(100)
     private int wordCount;
 
     public GenerationRequest() {}
