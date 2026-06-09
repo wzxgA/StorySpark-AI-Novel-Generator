@@ -38,3 +38,14 @@ body {
 .bg-gray-850 {
   background-color: #1f2937;
 }
+
+/* Remove number input spinners for dark theme consistency */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

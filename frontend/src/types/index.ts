@@ -9,7 +9,7 @@ export * from './chapter-plan';
 export * from './ai-config';
 export * from './generation';
 
-export type EntityType = 'novel' | 'chapter' | 'character' | 'item' | 'worldbuilding' | 'outline' | 'synopsis' | 'chapter-plan' | 'settings';
+export type EntityType = 'novel' | 'chapter' | 'character' | 'item' | 'worldbuilding' | 'outline' | 'synopsis' | 'chapter-plan' | 'settings' | 'batch-gen';
 
 export interface Tab {
   id: string;

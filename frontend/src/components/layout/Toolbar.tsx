@@ -43,8 +43,9 @@ export default function Toolbar() {
       </button>
 
       <button
-        disabled
-        className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-500 cursor-not-allowed rounded"
+        onClick={() => selectedNovelId && openTab('batch-gen', null, t('toolbar.batchGen'))}
+        disabled={!selectedNovelId}
+        className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-300 hover:text-gray-100 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed rounded transition-colors"
         title={t('toolbar.batchGenTitle')}
       >
         <BookOpen className="w-4 h-4" />

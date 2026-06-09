@@ -1,4 +1,4 @@
-import type { TokenEvent, DoneEvent, ErrorEvent } from '../types';
+import type { TokenEvent, DoneEvent, ErrorEvent, BatchStartEvent, ChapterStartEvent, ChapterDoneEvent, BatchDoneEvent } from '../types';
 
 const BASE_URL = 'http://localhost:18080'
 
@@ -23,6 +23,10 @@ export interface StreamCallbacks {
   onToken: (data: TokenEvent) => void;
   onDone: (data: DoneEvent) => void;
   onError: (data: ErrorEvent) => void;
+  onBatchStart?: (data: BatchStartEvent) => void;
+  onChapterStart?: (data: ChapterStartEvent) => void;
+  onChapterDone?: (data: ChapterDoneEvent) => void;
+  onBatchDone?: (data: BatchDoneEvent) => void;
 }
 
 export function streamGenerate(
@@ -69,20 +73,20 @@ export function streamGenerate(
 
         for (const line of lines) {
           if (line.startsWith('event:')) {
-            // format: "event:token" or "event: token"
             currentEvent = line.slice(6).trim();
           } else if (line.startsWith('data:')) {
-            // format: "data:{...}" or "data: {...}"
             const data = line.slice(5).trim();
             if (!data) continue;
             try {
               const parsed = JSON.parse(data);
-              if (currentEvent === 'token') {
-                callbacks.onToken(parsed as TokenEvent);
-              } else if (currentEvent === 'done') {
-                callbacks.onDone(parsed as DoneEvent);
-              } else if (currentEvent === 'error') {
-                callbacks.onError(parsed as ErrorEvent);
+              switch (currentEvent) {
+                case 'token': callbacks.onToken(parsed as TokenEvent); break;
+                case 'done': callbacks.onDone(parsed as DoneEvent); break;
+                case 'error': callbacks.onError(parsed as ErrorEvent); break;
+                case 'batch-start': callbacks.onBatchStart?.(parsed as BatchStartEvent); break;
+                case 'chapter-start': callbacks.onChapterStart?.(parsed as ChapterStartEvent); break;
+                case 'chapter-done': callbacks.onChapterDone?.(parsed as ChapterDoneEvent); break;
+                case 'batch-done': callbacks.onBatchDone?.(parsed as BatchDoneEvent); break;
               }
             } catch {
               // ignore unparsable frames

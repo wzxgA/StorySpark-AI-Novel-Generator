@@ -13,6 +13,7 @@ const typeIcons: Record<EntityType, typeof BookOpen> = {
   synopsis: List,
   'chapter-plan': ScrollText,
   'settings': Settings,
+  'batch-gen': BookOpen,
 };
 
 export default function TabBar() {

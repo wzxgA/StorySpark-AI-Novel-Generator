@@ -11,3 +11,28 @@ export interface DoneEvent {
 export interface ErrorEvent {
   message: string;
 }
+
+// Batch generation events
+export interface BatchStartEvent {
+  startChapter: number;
+  endChapter: number;
+  totalChapters: number;
+}
+
+export interface ChapterStartEvent {
+  chapterId: number;
+  chapterNumber: number;
+}
+
+export interface ChapterDoneEvent {
+  chapterId: number;
+  chapterNumber: number;
+  wordCount: number;
+  completedCount: number;
+  totalCount: number;
+}
+
+export interface BatchDoneEvent {
+  totalChapters: number;
+  completedChapters: number;
+}

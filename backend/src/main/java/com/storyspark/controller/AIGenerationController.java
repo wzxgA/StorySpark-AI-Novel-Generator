@@ -1,12 +1,10 @@
 package com.storyspark.controller;
 
+import com.storyspark.model.dto.GenerationRequest;
 import com.storyspark.service.AIGenerationService;
-import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/novels/{novelId}")
@@ -28,10 +26,7 @@ public class AIGenerationController {
             @RequestParam(defaultValue = "0") int wordCount) {
 
         SseEmitter emitter = new SseEmitter(300000L); // 5-minute timeout
-
-        // Determine chapter number from the chapter ID
         aiGenerationService.generateForChapter(novelId, chapterId, emitter);
-
         return emitter;
     }
 
@@ -45,6 +40,19 @@ public class AIGenerationController {
 
         SseEmitter emitter = new SseEmitter(300000L);
         aiGenerationService.generateSingleChapter(novelId, chapterNumber, emitter);
+        return emitter;
+    }
+
+    /**
+     * Batch generate chapters from startChapter to endChapter via SSE streaming.
+     */
+    @PostMapping("/chapters/batch-generate")
+    public SseEmitter batchGenerate(
+            @PathVariable Long novelId,
+            @RequestBody GenerationRequest request) {
+
+        SseEmitter emitter = new SseEmitter(600000L); // 10-minute timeout
+        aiGenerationService.batchGenerate(novelId, request.getStartChapter(), request.getEndChapter(), emitter);
         return emitter;
     }
 }

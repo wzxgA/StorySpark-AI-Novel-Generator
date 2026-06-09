@@ -7,7 +7,7 @@
     "newChapterTitle": "New Chapter (Ctrl+N)",
     "settingsTitle": "AI Settings",
     "exportTitle": "Export (Coming in Phase 7)",
-    "batchGenTitle": "Batch Generate (Coming in Phase 4)"
+    "batchGenTitle": "Batch Generate"
   },
   "sidebar": {
     "noNovelYet": "No novel yet",
@@ -154,5 +154,20 @@
     "testConnection": "Test Connection",
     "save": "Save",
     "saving": "Saving..."
+  },
+  "batchPanel": {
+    "title": "Batch Generation",
+    "rangeTitle": "Chapter Range",
+    "rangeStart": "Range Start",
+    "rangeEnd": "Range End",
+    "chapters": "chapters",
+    "existingPlans": "Existing Chapter Plans",
+    "noPlans": "No chapter plans in selected range",
+    "start": "Start Batch Generation",
+    "stop": "Stop Generation",
+    "progress": "Generation Progress",
+    "generating": "Generating...",
+    "currentChapter": "Chapter {{num}} Preview",
+    "waiting": "Waiting for AI..."
   }
 }

@@ -10,6 +10,7 @@ import OutlineEditor from '../editors/OutlineEditor';
 import SynopsisEditor from '../editors/SynopsisEditor';
 import ChapterPlanEditor from '../editors/ChapterPlanEditor';
 import SettingsPage from '../settings/SettingsPage';
+import BatchGenerationPanel from '../generation/BatchGenerationPanel';
 
 export default function TabContent() {
   const { t } = useTranslation();
@@ -51,6 +52,8 @@ export default function TabContent() {
       return <ChapterPlanEditor novelId={novelId} entityId={activeTab.entityId} />;
     case 'settings':
       return <SettingsPage />;
+    case 'batch-gen':
+      return <BatchGenerationPanel />;
     default:
       return <div className="p-4 text-gray-400">{t('tabs.unknownType')}</div>;
   }

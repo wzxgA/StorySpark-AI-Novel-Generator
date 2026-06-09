@@ -7,7 +7,7 @@
     "newChapterTitle": "新建章节 (Ctrl+N)",
     "settingsTitle": "AI 设置",
     "exportTitle": "导出 (第7阶段上线)",
-    "batchGenTitle": "批量生成 (第4阶段上线)"
+    "batchGenTitle": "批量生成"
   },
   "sidebar": {
     "noNovelYet": "暂无小说",
@@ -154,5 +154,20 @@
     "testConnection": "测试连接",
     "save": "保存",
     "saving": "保存中..."
+  },
+  "batchPanel": {
+    "title": "批量生成",
+    "rangeTitle": "章节范围",
+    "rangeStart": "起始章节",
+    "rangeEnd": "结束章节",
+    "chapters": "章",
+    "existingPlans": "已有章节计划",
+    "noPlans": "所选范围内无章节计划",
+    "start": "开始批量生成",
+    "stop": "停止生成",
+    "progress": "生成进度",
+    "generating": "生成中...",
+    "currentChapter": "第 {{num}} 章预览",
+    "waiting": "等待 AI 响应..."
   }
 }
