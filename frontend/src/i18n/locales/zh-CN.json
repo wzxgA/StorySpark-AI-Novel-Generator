@@ -1,10 +1,10 @@
 {
   "toolbar": {
-    "newChapter": "新建章节",
+    "newNovel": "新建小说",
     "settings": "设置",
     "export": "导出",
     "batchGen": "批量生成",
-    "newChapterTitle": "新建章节 (Ctrl+N)",
+    "newNovelTitle": "新建小说",
     "settingsTitle": "AI 设置",
     "exportTitle": "导出 (第7阶段上线)",
     "batchGenTitle": "批量生成"
@@ -19,6 +19,7 @@
     "chapters": "章节",
     "chapterPlans": "章节计划",
     "synopses": "剧情摘要",
+    "novels": "小说",
     "newCharacter": "新建角色",
     "newItem": "新建物品",
     "newWorldEntry": "新建世界观条目",
@@ -30,7 +31,8 @@
   "tabs": {
     "noTabs": "暂无打开的标签页 — 从项目树中选择一个项目",
     "unknownType": "未知标签类型",
-    "selectItem": "从项目树中选择一个项目开始编辑"
+    "selectItem": "从项目树中选择一个项目开始编辑",
+    "selectNovel": "请先选择一本小说"
   },
   "editor": {
     "save": "保存",

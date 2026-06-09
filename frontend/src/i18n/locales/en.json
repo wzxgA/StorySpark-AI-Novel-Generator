@@ -1,10 +1,10 @@
 {
   "toolbar": {
-    "newChapter": "New Chapter",
+    "newNovel": "New Novel",
     "settings": "Settings",
     "export": "Export",
     "batchGen": "Batch Gen",
-    "newChapterTitle": "New Chapter (Ctrl+N)",
+    "newNovelTitle": "New Novel",
     "settingsTitle": "AI Settings",
     "exportTitle": "Export (Coming in Phase 7)",
     "batchGenTitle": "Batch Generate"
@@ -19,6 +19,7 @@
     "chapters": "Chapters",
     "chapterPlans": "Chapter Plans",
     "synopses": "Synopses",
+    "novels": "Novels",
     "newCharacter": "New Character",
     "newItem": "New Item",
     "newWorldEntry": "New World Entry",
@@ -30,7 +31,8 @@
   "tabs": {
     "noTabs": "No tabs open — select an item from the project tree",
     "unknownType": "Unknown tab type",
-    "selectItem": "Select an item from the project tree to start editing"
+    "selectItem": "Select an item from the project tree to start editing",
+    "selectNovel": "Select a novel to get started"
   },
   "editor": {
     "save": "Save",

@@ -60,7 +60,7 @@ export const useNovelStore = create<NovelState>((set) => ({
     await apiClient.delete(`/api/novels/${id}`);
     set((s) => ({
       novels: s.novels.filter((n) => n.id !== id),
-      selectedNovelId: s.selectedNovelId === id ? null : s.selectedNovelId,
+      selectedNovelId: s.selectedNovelId === id ? (s.novels.filter((n) => n.id !== id)[0]?.id ?? null) : s.selectedNovelId,
     }));
   },
 

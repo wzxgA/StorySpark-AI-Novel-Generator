@@ -31,7 +31,18 @@ export default function TabContent() {
     );
   }
 
-  const novelId = selectedNovelId!;
+  if (!selectedNovelId) {
+    return (
+      <div className="h-full flex items-center justify-center text-gray-600">
+        <div className="text-center">
+          <p className="text-4xl mb-2">&#x1F4D6;</p>
+          <p className="text-sm">{t('tabs.selectNovel')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const novelId = selectedNovelId;
 
   switch (activeTab.type) {
     case 'novel':
