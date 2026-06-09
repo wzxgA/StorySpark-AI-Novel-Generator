@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { streamGenerate } from '../lib/api-client';
+import { streamGenerate, apiClient } from '../lib/api-client';
 import type { StreamCallbacks } from '../lib/api-client';
 
 export interface ChapterStatus {
@@ -7,6 +7,15 @@ export interface ChapterStatus {
   status: 'pending' | 'generating' | 'done' | 'error';
   wordCount: number;
   error?: string;
+}
+
+export interface GeneratedChapter {
+  chapterId: number;
+  chapterNumber: number;
+  title: string;
+  content: string;
+  wordCount: number;
+  confirmed: boolean;
 }
 
 interface BatchGenerationState {
@@ -19,11 +28,14 @@ interface BatchGenerationState {
   currentChapterNumber: number | null;
   streamingContent: string;
   chapterStatuses: ChapterStatus[];
+  generatedChapters: GeneratedChapter[];
   error: string | null;
   abortController: AbortController | null;
 
   startBatchGeneration: (novelId: number, startChapter: number, endChapter: number) => void;
   stopBatchGeneration: () => void;
+  confirmChapter: (novelId: number, chapterId: number) => Promise<void>;
+  discardChapter: (novelId: number, chapterId: number) => Promise<void>;
   reset: () => void;
 }
 
@@ -37,6 +49,7 @@ export const useBatchGenerationStore = create<BatchGenerationState>((set, get) =
   currentChapterNumber: null,
   streamingContent: '',
   chapterStatuses: [],
+  generatedChapters: [],
   error: null,
   abortController: null,
 
@@ -59,6 +72,7 @@ export const useBatchGenerationStore = create<BatchGenerationState>((set, get) =
       currentChapterNumber: null,
       streamingContent: '',
       chapterStatuses,
+      generatedChapters: [],
       error: null,
     });
 
@@ -71,8 +85,9 @@ export const useBatchGenerationStore = create<BatchGenerationState>((set, get) =
       },
       onError: (data) => {
         set((s) => {
+          const errorChapterNumber = data.chapterNumber ?? s.currentChapterNumber;
           const updated = s.chapterStatuses.map((cs) =>
-            cs.chapterNumber === s.currentChapterNumber
+            cs.chapterNumber === errorChapterNumber
               ? { ...cs, status: 'error' as const, error: data.message }
               : cs
           );
@@ -107,6 +122,17 @@ export const useBatchGenerationStore = create<BatchGenerationState>((set, get) =
           return {
             completedChapters: data.completedCount,
             chapterStatuses: updated,
+            generatedChapters: [
+              ...s.generatedChapters,
+              {
+                chapterId: data.chapterId,
+                chapterNumber: data.chapterNumber,
+                title: data.title || '',
+                content: data.content || '',
+                wordCount: data.wordCount,
+                confirmed: false,
+              },
+            ],
           };
         });
       },
@@ -137,6 +163,31 @@ export const useBatchGenerationStore = create<BatchGenerationState>((set, get) =
     set({ isGenerating: false, abortController: null });
   },
 
+  confirmChapter: async (novelId, chapterId) => {
+    await apiClient.post(`/api/novels/${novelId}/chapters/${chapterId}/confirm`, {});
+    set((s) => ({
+      generatedChapters: s.generatedChapters.map((gc) =>
+        gc.chapterId === chapterId ? { ...gc, confirmed: true } : gc
+      ),
+    }));
+  },
+
+  discardChapter: async (novelId, chapterId) => {
+    await apiClient.delete(`/api/novels/${novelId}/chapters/${chapterId}/discard`);
+    set((s) => {
+      const discarded = s.generatedChapters.find((gc) => gc.chapterId === chapterId);
+      return {
+        generatedChapters: s.generatedChapters.filter((gc) => gc.chapterId !== chapterId),
+        chapterStatuses: s.chapterStatuses.map((cs) =>
+          cs.chapterNumber === discarded?.chapterNumber
+            ? { ...cs, status: 'pending' as const, wordCount: 0 }
+            : cs
+        ),
+        completedChapters: Math.max(0, s.completedChapters - 1),
+      };
+    });
+  },
+
   reset: () => set({
     isGenerating: false,
     startChapter: 0,
@@ -147,6 +198,7 @@ export const useBatchGenerationStore = create<BatchGenerationState>((set, get) =
     currentChapterNumber: null,
     streamingContent: '',
     chapterStatuses: [],
+    generatedChapters: [],
     error: null,
     abortController: null,
   }),

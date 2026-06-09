@@ -84,10 +84,10 @@ public class AIGenerationService {
         Novel novel = novelRepository.findById(novelId)
                 .orElseThrow(() -> new RuntimeException("Novel not found"));
 
-        Chapter chapter = chapterRepository.findByNovelIdAndChapterNumber(novelId, chapterNumber)
+        Chapter chapter = chapterRepository.findFirstByNovelIdAndChapterNumber(novelId, chapterNumber)
                 .orElse(null);
 
-        generateOneChapter(novel, chapterNumber, chapter, emitter, () -> emitter.complete());
+        generateOneChapter(novel, chapterNumber, chapter, emitter, () -> emitter.complete(), ChapterStatus.COMPLETED, new AtomicBoolean(true));
     }
 
     /**
@@ -120,7 +120,7 @@ public class AIGenerationService {
         for (int chapterNumber = startChapter; chapterNumber <= endChapter; chapterNumber++) {
             if (cancelled.get()) break;
 
-            Chapter chapter = chapterRepository.findByNovelIdAndChapterNumber(novelId, chapterNumber)
+            Chapter chapter = chapterRepository.findFirstByNovelIdAndChapterNumber(novelId, chapterNumber)
                     .orElse(null);
 
             if (chapter == null) {
@@ -146,16 +146,20 @@ public class AIGenerationService {
 
             int finalChapterNumber = chapterNumber;
             Chapter finalChapter = chapter;
+            AtomicBoolean chapterSuccess = new AtomicBoolean(false);
             generateOneChapter(novel, chapterNumber, chapter, emitter, () -> {
                 chapterLatch.countDown();
-            });
+            }, ChapterStatus.DRAFT, chapterSuccess);
 
             try {
-                chapterLatch.await();
+                chapterLatch.await(300, java.util.concurrent.TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
             }
+
+            // Only send chapter-done if generation actually succeeded
+            if (!chapterSuccess.get()) continue;
 
             completedChapters++;
 
@@ -163,6 +167,8 @@ public class AIGenerationService {
                 sendSseEvent(emitter, "chapter-done", Map.of(
                         "chapterId", finalChapter.getId(),
                         "chapterNumber", finalChapterNumber,
+                        "title", finalChapter.getTitle() != null ? finalChapter.getTitle() : "",
+                        "content", finalChapter.getContent() != null ? finalChapter.getContent() : "",
                         "wordCount", finalChapter.getWordCount(),
                         "completedCount", completedChapters,
                         "totalCount", totalChapters
@@ -192,7 +198,8 @@ public class AIGenerationService {
      * Core generation logic for one chapter. Calls onChapterComplete when done (via SSE or error).
      */
     private void generateOneChapter(Novel novel, int chapterNumber, Chapter chapter,
-                                     SseEmitter emitter, Runnable onChapterComplete) {
+                                     SseEmitter emitter, Runnable onChapterComplete,
+                                     ChapterStatus targetStatus, AtomicBoolean successFlag) {
         AtomicBoolean cancelled = new AtomicBoolean(false);
 
         AIConfig config = aiConfigRepository.findById(1L)
@@ -227,6 +234,7 @@ public class AIGenerationService {
                             int wordCount = content.trim().isEmpty() ? 0
                                     : content.trim().split("\\s+").length;
 
+                            // Save chapter first (SSE send may fail if emitter already completed)
                             try {
                                 Chapter ch = chapter;
                                 if (ch == null) {
@@ -237,32 +245,37 @@ public class AIGenerationService {
                                 }
                                 ch.setContent(content);
                                 ch.setWordCount(wordCount);
-                                ch.setStatus(ChapterStatus.COMPLETED);
+                                ch.setStatus(targetStatus);
                                 chapterRepository.save(ch);
-
-                                sendSseEvent(emitter, "done", Map.of(
-                                        "chapterId", ch.getId(),
-                                        "wordCount", wordCount
-                                ));
                             } catch (Exception e) {
-                                log.error("Failed to save chapter", e);
-                                sendSseSilent(emitter, "error",
-                                        Map.of("message", "保存失败: " + e.getMessage()));
+                                log.error("Failed to save chapter {}", chapterNumber, e);
                             }
+
+                            // SSE event is best-effort: emitter may have completed already
+                            sendSseSilent(emitter, "done", Map.of(
+                                    "chapterId", chapter != null ? chapter.getId() : 0,
+                                    "wordCount", wordCount
+                            ));
+                            successFlag.set(true);
                             onChapterComplete.run();
                         }
 
                         @Override
                         public void onError(Throwable error) {
                             log.error("Generation error for chapter {}", chapterNumber, error);
-                            sendSseSilent(emitter, "error",
-                                    Map.of("message", error.getMessage()));
+                            sendSseSilent(emitter, "error", Map.of(
+                                    "message", error.getMessage(),
+                                    "chapterNumber", chapterNumber
+                            ));
                             onChapterComplete.run();
                         }
                     });
         } catch (Exception e) {
             log.error("Failed to start generation for chapter {}", chapterNumber, e);
-            sendSseSilent(emitter, "error", Map.of("message", e.getMessage()));
+            sendSseSilent(emitter, "error", Map.of(
+                    "message", e.getMessage(),
+                    "chapterNumber", chapterNumber
+            ));
             onChapterComplete.run();
         }
     }

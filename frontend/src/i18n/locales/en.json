@@ -169,8 +169,20 @@
     "stop": "Stop Generation",
     "progress": "Generation Progress",
     "generating": "Generating...",
+        "generatingTitle": "Generating",
     "currentChapter": "Chapter {{num}} Preview",
-    "waiting": "Waiting for AI..."
+    "waiting": "Waiting for AI...",
+    "generatedTitle": "Generated Chapters",
+    "preview": "Preview",
+    "previewTitle": "Ch.{{num}} {{title}}",
+    "confirm": "Confirm",
+    "confirmed": "Confirmed",
+    "discard": "Discard",
+    "discardConfirm": "Discard this chapter?",
+    "noGenerated": "No generated chapters yet",
+    "allConfirmed": "All Confirmed",
+    "batchComplete": "Batch Complete",
+    "close": "Close"
   },
   "export": {
     "title": "Export Novel",

@@ -322,7 +322,7 @@ public class ContextManager {
 
     private String buildInstructions(Novel novel, int chapterNumber) {
         String chapterTitle = "第" + chapterNumber + "章";
-        Chapter existingChapter = chapterRepository.findByNovelIdAndChapterNumber(novel.getId(), chapterNumber)
+        Chapter existingChapter = chapterRepository.findFirstByNovelIdAndChapterNumber(novel.getId(), chapterNumber)
                 .orElse(null);
         if (existingChapter != null && existingChapter.getTitle() != null
                 && !existingChapter.getTitle().isEmpty()
