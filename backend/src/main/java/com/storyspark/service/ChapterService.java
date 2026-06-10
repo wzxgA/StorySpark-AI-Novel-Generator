@@ -3,6 +3,7 @@ package com.storyspark.service;
 import com.storyspark.model.dto.ChapterDTO;
 import com.storyspark.model.entity.Chapter;
 import com.storyspark.model.entity.Novel;
+import com.storyspark.model.enums.ChapterStatus;
 import com.storyspark.repository.ChapterRepository;
 import com.storyspark.repository.NovelRepository;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class ChapterService {
     @Transactional(readOnly = true)
     public List<ChapterDTO> findByNovelId(Long novelId) {
         return chapterRepository.findByNovelIdOrderByChapterNumberAsc(novelId).stream()
+                .filter(c -> c.getStatus() == ChapterStatus.COMPLETED)
                 .map(this::toDTOSummary)
                 .toList();
     }
@@ -109,9 +111,18 @@ public class ChapterService {
         if (dto.getTitle() != null) chapter.setTitle(dto.getTitle());
         if (dto.getContent() != null) {
             chapter.setContent(dto.getContent());
-            chapter.setWordCount(dto.getContent().split("\\s+").length);
+            chapter.setWordCount(countWords(dto.getContent()));
         }
         if (dto.getChapterNumber() > 0) chapter.setChapterNumber(dto.getChapterNumber());
         if (dto.getStatus() != null) chapter.setStatus(dto.getStatus());
+    }
+
+    /**
+     * Count words by counting all non-whitespace characters.
+     * This matches the standard Chinese "字数" convention.
+     */
+    private static int countWords(String content) {
+        if (content == null || content.trim().isEmpty()) return 0;
+        return (int) content.codePoints().filter(cp -> !Character.isWhitespace(cp)).count();
     }
 }

@@ -254,6 +254,14 @@ public class AIGenerationService {
         StringBuilder fullContent = new StringBuilder();
 
         try {
+            // Ensure onChapterComplete is called at most once to avoid double-counting latches
+            AtomicBoolean completed = new AtomicBoolean(false);
+            Runnable completeOnce = () -> {
+                if (completed.compareAndSet(false, true)) {
+                    onChapterComplete.run();
+                }
+            };
+
             model.generate(
                     List.of(new SystemMessage(SYSTEM_PROMPT), new UserMessage(userPrompt)),
                     Collections.emptyList(),
@@ -261,7 +269,8 @@ public class AIGenerationService {
                         @Override
                         public void onNext(String token) {
                             if (cancelled.get()) {
-                                throw new RuntimeException("Generation cancelled");
+                                completeOnce.run();
+                                return;
                             }
                             try {
                                 fullContent.append(token);
@@ -271,15 +280,18 @@ public class AIGenerationService {
                                 ));
                             } catch (Exception e) {
                                 cancelled.set(true);
-                                throw new RuntimeException("Generation cancelled");
+                                completeOnce.run();
                             }
                         }
 
                         @Override
                         public void onComplete(Response<AiMessage> response) {
+                            if (cancelled.get()) {
+                                completeOnce.run();
+                                return;
+                            }
                             String content = fullContent.toString();
-                            int wordCount = content.trim().isEmpty() ? 0
-                                    : content.trim().split("\\s+").length;
+                            int wordCount = countWords(content);
 
                             try {
                                 Chapter ch = chapter;
@@ -302,21 +314,19 @@ public class AIGenerationService {
                                     "wordCount", wordCount
                             ));
                             successFlag.set(true);
-                            onChapterComplete.run();
+                            completeOnce.run();
                         }
 
                         @Override
                         public void onError(Throwable error) {
-                            if (cancelled.get()) {
-                                log.info("Generation cancelled for chapter {}", chapterNumber);
-                            } else {
+                            if (!cancelled.get()) {
                                 log.error("Generation error for chapter {}", chapterNumber, error);
                                 sendSseSilent(emitter, "error", Map.of(
                                         "message", error.getMessage(),
                                         "chapterNumber", chapterNumber
                                 ));
                             }
-                            onChapterComplete.run();
+                            completeOnce.run();
                         }
                     });
         } catch (Exception e) {
@@ -362,5 +372,14 @@ public class AIGenerationService {
         try {
             sendSseEvent(emitter, event, data);
         } catch (Exception ignored) {}
+    }
+
+    /**
+     * Count words by counting all non-whitespace characters.
+     * This matches the standard Chinese "字数" convention.
+     */
+    static int countWords(String content) {
+        if (content == null || content.trim().isEmpty()) return 0;
+        return (int) content.codePoints().filter(cp -> !java.lang.Character.isWhitespace(cp)).count();
     }
 }

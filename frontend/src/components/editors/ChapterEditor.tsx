@@ -44,7 +44,7 @@ export default function ChapterEditor({ novelId, entityId }: Props) {
   useEffect(() => {
     if (entityId) {
       const cached = chapters.find((c) => c.id === entityId);
-      if (cached) {
+      if (cached && cached.content != null) {
         setForm({
           chapterNumber: cached.chapterNumber,
           title: cached.title,
@@ -65,20 +65,12 @@ export default function ChapterEditor({ novelId, entityId }: Props) {
   }, [entityId, chapters, novelId, fetchById]);
 
   const computeWordCount = (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return 0;
-    // Count CJK characters individually, plus whitespace-separated words for the rest
+    if (!text.trim()) return 0;
+    // Count all non-whitespace characters (standard Chinese "字数")
     let count = 0;
-    let nonCjk = '';
-    for (const ch of trimmed) {
-      if (/[一-鿿㐀-䶿豈-﫿]/.test(ch)) {
-        if (nonCjk) { count += nonCjk.trim().split(/\s+/).filter(Boolean).length; nonCjk = ''; }
-        count++;
-      } else {
-        nonCjk += ch;
-      }
+    for (const ch of text) {
+      if (ch !== ' ' && ch !== '\n' && ch !== '\r' && ch !== '\t') count++;
     }
-    if (nonCjk) count += nonCjk.trim().split(/\s+/).filter(Boolean).length;
     return count;
   };
 
